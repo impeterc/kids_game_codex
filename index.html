@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kids Side Scroll Adventure</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <h1>Kids Side Scroll Adventure (Prototype)</h1>
+      <p class="subtitle">Slow gameplay, clear feedback, and easy controls for family iteration.</p>
+      <section class="hud" aria-label="game status">
+        <div id="levelName"></div>
+        <div id="timer"></div>
+        <div id="status"></div>
+        <div id="objective"></div>
+      </section>
+      <canvas id="gameCanvas" width="960" height="540" aria-label="game canvas"></canvas>
+      <section class="controls">
+        <h2>Controls</h2>
+        <p>Move: Arrow keys</p>
+        <p>Level 1: W (laser), E (shooting star)</p>
+        <p>Level 2: M (cannon), F (speed), X (strength), G (flight)</p>
+      </section>
+    </main>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
