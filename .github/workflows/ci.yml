@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
+      # Use npm install (not npm ci) because this starter repo does not yet commit
+      # a package-lock.json. Once lockfile is added, switch back to npm ci.
+      - run: npm install
       - run: npx playwright install --with-deps chromium
       - run: npm test
