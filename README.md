@@ -49,6 +49,21 @@ Open http://127.0.0.1:4173
 - Level 1: `http://127.0.0.1:4173/?level=1`
 - Level 2: `http://127.0.0.1:4173/?level=2`
 
+- Controls: Left/Right = move, Up = jump.
+- Level progression: Level 1 auto-advances to Level 2 on victory or time end.
+
+
+## E2E test quickstart (first run)
+```bash
+npm install
+npm run test:e2e:install
+npm run test:e2e
+```
+
+Why this extra install step exists:
+- Playwright needs a browser binary + Linux system libraries on first run.
+- In GitHub Actions this is already handled by `npx playwright install --with-deps chromium` in CI.
+
 ## Test strategy (shift left)
 - Unit tests validate pure rules in `src/systems/rules.js`.
 - E2E tests validate HUD rendering and level loading.

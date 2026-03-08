@@ -6,11 +6,16 @@ import { InputManager } from './core/InputManager.js';
 const query = new URLSearchParams(window.location.search);
 const selectedLevel = Number(query.get('level') || 1);
 const levelConfig = levels[selectedLevel] ?? levels[1];
+const requestedDuration = Number(query.get('duration'));
+const levelDurationSeconds = Number.isFinite(requestedDuration) && requestedDuration > 0
+  ? requestedDuration
+  : undefined;
 
 console.info('[boot] game startup', {
   selectedLevel,
   levelName: levelConfig.name,
-  levelObjective: levelConfig.objective
+  levelObjective: levelConfig.objective,
+  levelDurationSeconds: levelDurationSeconds ?? 'default'
 });
 
 const canvas = document.getElementById('gameCanvas');
@@ -31,7 +36,8 @@ const game = new Game({
   input,
   levelConfig,
   musicManager,
-  hud
+  hud,
+  levelDurationSeconds
 });
 
 game.start();
