@@ -37,7 +37,12 @@ export class Game {
   }
 
   start() {
-    window.addEventListener('click', () => this.musicManager.start(), { once: true });
+    const unlockAudio = () => this.musicManager.start();
+
+    window.addEventListener('click', unlockAudio, { once: true });
+    window.addEventListener('keydown', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true });
+
     requestAnimationFrame((time) => this.frame(time));
   }
 
