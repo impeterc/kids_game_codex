@@ -6,7 +6,7 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:4173'
   },
   webServer: {
-    command: 'npx serve . -l 4173',
+    command: 'npm run start',
     url: 'http://127.0.0.1:4173',
     reuseExistingServer: true,
     timeout: 120000
