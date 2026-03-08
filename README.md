@@ -49,6 +49,9 @@ Open http://127.0.0.1:4173
 - Level 1: `http://127.0.0.1:4173/?level=1`
 - Level 2: `http://127.0.0.1:4173/?level=2`
 
+- Controls: Left/Right = move, Up = jump.
+- Level progression: Level 1 auto-advances to Level 2 on victory or time end.
+
 
 ## E2E test quickstart (first run)
 ```bash
