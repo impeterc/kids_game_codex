@@ -4,13 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "npx serve . -l 4173",
+    "start": "serve . -l 4173",
     "test:unit": "vitest run tests/unit",
     "test:e2e": "playwright test",
-    "test": "npm run test:unit && npm run test:e2e"
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:e2e:install": "playwright install --with-deps chromium",
+    "test:setup": "npm run test:e2e:install"
   },
   "devDependencies": {
     "@playwright/test": "^1.53.0",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "serve": "^14.2.5"
   }
 }

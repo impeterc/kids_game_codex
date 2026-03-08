@@ -4,15 +4,17 @@ import { Player } from '../entities/Player.js';
 import { evaluateLevelOneOutcome, shouldKeepLingerAnimation } from '../systems/rules.js';
 
 const LINGER_MS = 3500;
+const LEVEL_TRANSITION_DELAY_MS = 1800;
 
 export class Game {
-  constructor({ canvas, input, levelConfig, musicManager, hud }) {
+  constructor({ canvas, input, levelConfig, musicManager, hud, levelDurationSeconds = LEVEL_DURATION_SECONDS }) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.input = input;
     this.levelConfig = levelConfig;
     this.musicManager = musicManager;
     this.hud = hud;
+    this.levelDurationSeconds = levelDurationSeconds;
 
     this.player = new Player({
       x: 80,
@@ -31,13 +33,28 @@ export class Game {
     this.defeatedEnemies = 0;
     this.levelStartMs = performance.now();
     this.lastFrameMs = performance.now();
-    this.message = 'Use arrow keys to move. Action keys defeat enemies at close range.';
+    this.message = 'Move: left/right arrows. Jump: up arrow. Use action keys near enemies. Press R to restart.';
     this.linger = null;
     this.over = false;
+    this.transitionAtMs = null;
+    this.restartRequested = false;
   }
 
   start() {
-    window.addEventListener('click', () => this.musicManager.start(), { once: true });
+    const unlockAudio = async () => {
+      const started = await this.musicManager.start();
+
+      if (started) {
+        window.removeEventListener('click', unlockAudio);
+        window.removeEventListener('keydown', unlockAudio);
+        window.removeEventListener('touchstart', unlockAudio);
+      }
+    };
+
+    window.addEventListener('click', unlockAudio);
+    window.addEventListener('keydown', unlockAudio);
+    window.addEventListener('touchstart', unlockAudio);
+
     requestAnimationFrame((time) => this.frame(time));
   }
 
@@ -47,6 +64,8 @@ export class Game {
 
     if (!this.over) {
       this.update(dt, nowMs);
+    } else {
+      this.handleTransitions(nowMs);
     }
 
     this.draw(nowMs);
@@ -54,6 +73,18 @@ export class Game {
   }
 
   update(dt, nowMs) {
+    const restartPressed = this.input.isPressed('KeyR');
+
+    if (restartPressed && !this.restartRequested) {
+      this.restartRequested = true;
+      window.location.reload();
+      return;
+    }
+
+    if (!restartPressed) {
+      this.restartRequested = false;
+    }
+
     this.player.update(this.input, dt, this.canvas.width);
 
     const actionPressed = this.input.isPressed(this.levelConfig.controls.actionPrimary) ||
@@ -78,30 +109,42 @@ export class Game {
     }
 
     const elapsed = (nowMs - this.levelStartMs) / 1000;
-    const remaining = Math.max(0, Math.ceil(LEVEL_DURATION_SECONDS - elapsed));
+    const remaining = Math.max(0, Math.ceil(this.levelDurationSeconds - elapsed));
 
-    if (evaluateLevelOneOutcome(this.defeatedEnemies)) {
+    if (this.levelConfig.id === 1 && evaluateLevelOneOutcome(this.defeatedEnemies)) {
       this.over = true;
-      this.message = 'Victory! Rainbow + balloon shower unlocked! Press R to restart.';
+      this.message = 'Victory! Level 2 loading...';
       this.linger = { startedMs: nowMs, text: this.message, type: 'victory' };
+      this.transitionAtMs = nowMs + LEVEL_TRANSITION_DELAY_MS;
     }
 
     if (remaining === 0 && !this.over) {
       this.over = true;
-      this.message = 'Time ended. Try again for all 3 wins! Press R to restart.';
-      this.linger = { startedMs: nowMs, text: this.message, type: 'loss' };
-    }
 
-    if (this.input.isPressed('KeyR') && this.over) {
-      location.reload();
+      if (this.levelConfig.id === 1) {
+        this.message = 'Time ended. Loading Level 2 for the next challenge...';
+        this.transitionAtMs = nowMs + LEVEL_TRANSITION_DELAY_MS;
+      } else {
+        this.message = 'Time ended. Press R to restart level 2.';
+      }
+
+      this.linger = { startedMs: nowMs, text: this.message, type: 'loss' };
     }
 
     this.renderHud(remaining);
   }
 
+  handleTransitions(nowMs) {
+    if (this.levelConfig.id === 1 && this.transitionAtMs && nowMs >= this.transitionAtMs) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('level', '2');
+      window.location.search = params.toString();
+    }
+  }
+
   renderHud(remaining) {
     this.hud.levelName.textContent = `Level: ${this.levelConfig.name}`;
-    this.hud.timer.textContent = `Time left: ${remaining}s / 180s`;
+    this.hud.timer.textContent = `Time left: ${remaining}s / ${this.levelDurationSeconds}s`;
     this.hud.objective.textContent = `Objective: ${this.levelConfig.objective}`;
     this.hud.status.textContent = `Defeated: ${this.defeatedEnemies}/3 | ${this.message}`;
   }

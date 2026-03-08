@@ -9,7 +9,7 @@
   <body>
     <main class="app-shell">
       <h1>Kids Side Scroll Adventure (Prototype)</h1>
-      <p class="subtitle">Slow gameplay, clear feedback, and easy controls for family iteration.</p>
+      <p class="subtitle">Slow gameplay, clear feedback, and easy controls for family iteration. Click game area once if keys stop responding.</p>
       <section class="hud" aria-label="game status">
         <div id="levelName"></div>
         <div id="timer"></div>
@@ -19,9 +19,11 @@
       <canvas id="gameCanvas" width="960" height="540" aria-label="game canvas"></canvas>
       <section class="controls">
         <h2>Controls</h2>
-        <p>Move: Arrow keys</p>
+        <p>Move: Left/Right arrows, Jump: Up arrow</p>
         <p>Level 1: W (laser), E (shooting star)</p>
         <p>Level 2: M (cannon), F (speed), X (strength), G (flight)</p>
+        <p>When level 1 ends, game auto-loads level 2.</p>
+        <p>Press R any time to restart current level.</p>
       </section>
     </main>
     <script type="module" src="./src/main.js"></script>
