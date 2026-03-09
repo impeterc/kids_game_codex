@@ -64,6 +64,18 @@ export class Game {
   }
 
   update(dt, nowMs) {
+    const restartPressed = this.input.isPressed('KeyR');
+
+    if (restartPressed && !this.restartRequested) {
+      this.restartRequested = true;
+      window.location.reload();
+      return;
+    }
+
+    if (!restartPressed) {
+      this.restartRequested = false;
+    }
+
     this.player.update(this.input, dt, this.canvas.width);
 
     const actionPressed = this.input.isPressed(this.levelConfig.controls.actionPrimary) ||
