@@ -33,27 +33,18 @@ export class Game {
     this.defeatedEnemies = 0;
     this.levelStartMs = performance.now();
     this.lastFrameMs = performance.now();
-    this.message = 'Move: left/right arrows. Jump: up arrow. Use action keys near enemies. Press R to restart.';
+    this.message = 'Move: left/right arrows. Jump: up arrow. Use action keys near enemies.';
     this.linger = null;
     this.over = false;
     this.transitionAtMs = null;
-    this.restartRequested = false;
   }
 
   start() {
-    const unlockAudio = async () => {
-      const started = await this.musicManager.start();
+    const unlockAudio = () => this.musicManager.start();
 
-      if (started) {
-        window.removeEventListener('click', unlockAudio);
-        window.removeEventListener('keydown', unlockAudio);
-        window.removeEventListener('touchstart', unlockAudio);
-      }
-    };
-
-    window.addEventListener('click', unlockAudio);
-    window.addEventListener('keydown', unlockAudio);
-    window.addEventListener('touchstart', unlockAudio);
+    window.addEventListener('click', unlockAudio, { once: true });
+    window.addEventListener('keydown', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true });
 
     requestAnimationFrame((time) => this.frame(time));
   }
@@ -129,6 +120,10 @@ export class Game {
       }
 
       this.linger = { startedMs: nowMs, text: this.message, type: 'loss' };
+    }
+
+    if (this.input.isPressed('KeyR') && this.over && this.levelConfig.id !== 1) {
+      location.reload();
     }
 
     this.renderHud(remaining);
